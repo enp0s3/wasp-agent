@@ -141,7 +141,7 @@ func (lsm *LimitedSwapManager) Execute() bool {
 
 	err, enqueueState := lsm.execute(key.(string))
 	if err != nil {
-		log.Log.Infof(fmt.Sprintf("RQController: Error with key: %v err: %v", key, err))
+		log.Log.Infof(fmt.Sprintf("LimitedSwapManager: Error with key: %v err: %v", key, err))
 	}
 	switch enqueueState {
 	case BackOff:
@@ -204,6 +204,7 @@ func (lsm *LimitedSwapManager) execute(key string) (error, enqueueState) {
 		containerDoesNotRequestMemory := container.Resources.Requests.Memory().IsZero() && container.Resources.Limits.Memory().IsZero()
 		memoryRequestEqualsToLimit := container.Resources.Requests.Memory().Cmp(*container.Resources.Limits.Memory()) == 0
 		if containerDoesNotRequestMemory || memoryRequestEqualsToLimit || setAllContainersSwapToZero {
+			log.Log.Infof("LimitSwapManager: setting swap=0 for %s/%s dirPath %s", pod.Name, container.Name, dirPath)
 			err := setSwapLimit(dirPath, 0)
 			if err != nil {
 				log.Log.Infof("LimitSwapManager: couldn't set swap limit: %v", err.Error())
@@ -213,6 +214,7 @@ func (lsm *LimitedSwapManager) execute(key string) (error, enqueueState) {
 		}
 		containerMemoryRequest := container.Resources.Requests.Memory()
 		swapLimit := calcSwapForBurstablePods(containerMemoryRequest.Value(), int64(lsm.memoryCapacity), int64(lsm.swapCapacity))
+		log.Log.Infof("LimitSwapManager: setting swap=%d for %s/%s dirPath %s", swapLimit, pod.Name, container.Name, dirPath)
 		err = setSwapLimit(dirPath, swapLimit)
 		if err != nil {
 			log.Log.Infof("LimitSwapManager: couldn't set swap limit: %v", err.Error())
