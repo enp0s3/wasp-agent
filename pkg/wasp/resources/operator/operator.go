@@ -2,6 +2,8 @@ package operator
 
 import (
 	"fmt"
+
+	"github.com/openshift-virtualization/wasp-agent/pkg/consts"
 	"github.com/openshift-virtualization/wasp-agent/pkg/monitoring/rules"
 	utils2 "github.com/openshift-virtualization/wasp-agent/pkg/util"
 
@@ -122,8 +124,8 @@ func createWaspDaemonSet(namespace, verbosity, waspImage, pullPolicy string) *ap
 				Exec: &corev1.ExecAction{
 					Command: []string{
 						"rm", "-f",
-						"/host/opt/oci-hook-swap.sh",
-						"/host/run/containers/oci/hooks.d/swap-for-burstable.json",
+						consts.HookScriptPath,
+						consts.HookConfigPath,
 					},
 				},
 			},
