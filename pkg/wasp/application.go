@@ -22,14 +22,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
+	"os"
 	"github.com/openshift-virtualization/wasp-agent/pkg/client"
 	"github.com/openshift-virtualization/wasp-agent/pkg/informers"
 	"github.com/openshift-virtualization/wasp-agent/pkg/log"
 	limited_swap_manager "github.com/openshift-virtualization/wasp-agent/pkg/wasp/limited-swap-manager"
-	"io"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog/v2"
-	"os"
 )
 
 type WaspApp struct {

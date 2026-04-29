@@ -30,6 +30,14 @@ spec:
             quay.io/openshift-virtualization/wasp-agent:v4.17
           imagePullPolicy: Always
           name: wasp-agent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - rm
+                  - -f
+                  - /host/opt/oci-hook-swap.sh
+                  - /host/run/containers/oci/hooks.d/swap-for-burstable.json
           resources:
             requests:
               cpu: 100m
