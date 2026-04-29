@@ -117,6 +117,17 @@ func createWaspDaemonSet(namespace, verbosity, waspImage, pullPolicy string) *ap
 		SecurityContext: &corev1.SecurityContext{
 			Privileged: boolPtr(true),
 		},
+		Lifecycle: &corev1.Lifecycle{
+			PreStop: &corev1.LifecycleHandler{
+				Exec: &corev1.ExecAction{
+					Command: []string{
+						"rm", "-f",
+						"/host/opt/oci-hook-swap.sh",
+						"/host/run/containers/oci/hooks.d/swap-for-burstable.json",
+					},
+				},
+			},
+		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
 				Name:      "host",

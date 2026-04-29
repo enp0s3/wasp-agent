@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	hookTemplateFile = "/app/OCI-hook/hookscript.template"
-	hookScriptPath   = "/host/opt/oci-hook-swap.sh"
+	hookTemplateFile  = "/app/OCI-hook/hookscript.template"
+	hookScriptPath    = "/host/opt/oci-hook-swap.sh"
+	hookConfigSource  = "/app/OCI-hook/swap-for-burstable.json"
+	hookConfigPath    = "/host/run/containers/oci/hooks.d/swap-for-burstable.json"
 	// CrioConfigPath is the default location for the conf file.
 	CrioConfigPath = "/host/etc/crio/crio.conf"
 	// CrioConfigDropInPath is the default location for the drop-in config files.
@@ -31,13 +33,14 @@ func setOCIHook() error {
 		return err
 	}
 
-	err = moveFile("/app/OCI-hook/swap-for-burstable.json", "/host/run/containers/oci/hooks.d/swap-for-burstable.json")
+	err = moveFile(hookConfigSource, hookConfigPath)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+
 
 func setupHookScript() error {
 	crioConfig := crioConfiguration(config.New(CrioConfigPath, CrioConfigDropInPath))
