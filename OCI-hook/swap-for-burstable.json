@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "hook": {
-    "path": "/opt/oci-hook-swap.sh"
+    "path": "{{ .HookScriptPath }}"
   },
   "when": {
     "always": true
