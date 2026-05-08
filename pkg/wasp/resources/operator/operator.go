@@ -3,7 +3,6 @@ package operator
 import (
 	"fmt"
 
-	"github.com/openshift-virtualization/wasp-agent/pkg/consts"
 	"github.com/openshift-virtualization/wasp-agent/pkg/monitoring/rules"
 	utils2 "github.com/openshift-virtualization/wasp-agent/pkg/util"
 
@@ -118,17 +117,6 @@ func createWaspDaemonSet(namespace, verbosity, waspImage, pullPolicy string) *ap
 		},
 		SecurityContext: &corev1.SecurityContext{
 			Privileged: boolPtr(true),
-		},
-		Lifecycle: &corev1.Lifecycle{
-			PreStop: &corev1.LifecycleHandler{
-				Exec: &corev1.ExecAction{
-					Command: []string{
-						"rm", "-f",
-						consts.HookScriptPath,
-						consts.HookConfigPath,
-					},
-				},
-			},
 		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
