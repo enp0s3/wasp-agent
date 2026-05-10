@@ -16,19 +16,16 @@
 
 set -euo pipefail
 
-source hack/build/config.sh
 source hack/build/common.sh
 
-hack/build/build-ginkgo.sh
-GINKGO="${BIN_DIR}/ginkgo"
+GINKGO_BIN="${BIN_DIR}/ginkgo"
 
-# parsetTestOpts sets 'pkgs' and test_args
-parseTestOpts "${@}"
-export KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=120s
+if [ -f "${GINKGO_BIN}" ]; then
+    echo "ginkgo binary already exists at ${GINKGO_BIN}, skipping build"
+    exit 0
+fi
 
-# ginkgo requires directory paths, not import paths
-ginkgo_dirs=$(go list -f '{{.Dir}}' ${pkgs} 2>/dev/null)
-
-test_command="env OPERATOR_DIR=${WASP_DIR} ${GINKGO} -v -coverprofile=.coverprofile ${ginkgo_dirs} ${test_args:+-args $test_args}"
-echo "${test_command}"
-${test_command}
+mkdir -p "${BIN_DIR}"
+echo "Building ginkgo from vendored source..."
+go build -o "${GINKGO_BIN}" ./vendor/github.com/onsi/ginkgo/v2/ginkgo
+echo "ginkgo binary built at ${GINKGO_BIN}"

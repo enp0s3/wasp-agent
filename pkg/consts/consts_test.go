@@ -1,16 +1,9 @@
 package consts
 
 import (
-	"testing"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
-
-func TestConsts(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Consts Suite")
-}
 
 var _ = Describe("Hook path generation", func() {
 	const testSuffix = "wasp-agent-abc12"

@@ -82,7 +82,8 @@ release-description:
 	./hack/build/release-description.sh ${RELREF} ${PREREF}
 
 clean:
-	rm ./wasp -f
+	rm -f ./wasp
+	rm -f ./bin/ginkgo
 
 fmt:
 	go fmt .
