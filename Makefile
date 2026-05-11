@@ -15,6 +15,7 @@
 .PHONY: manifests \
 		cluster-up cluster-down cluster-sync \
 		test test-functional test-unit test-lint \
+		lint-hook-script \
 		publish \
 		wasp \
 		fmt \
@@ -84,6 +85,9 @@ release-description:
 clean:
 	rm -f ./wasp
 	rm -f ./bin/ginkgo
+
+lint-hook-script:
+	./hack/build/shellcheck-hook.sh
 
 fmt:
 	go fmt .
