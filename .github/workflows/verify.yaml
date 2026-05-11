@@ -1,11 +1,7 @@
-name: lint
+name: verify
 
 on:
-  push:
-    branches: ['!main']
-    tags: ['!v*']
   pull_request:
-    branches: ['!main']
 
 jobs:
   bash:
@@ -15,3 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash -n contrib/*
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/openshift-virtualization/wasp-agent-builder:2409261312-0878b7f
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: make test-ci

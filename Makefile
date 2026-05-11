@@ -14,7 +14,7 @@
 
 .PHONY: manifests \
 		cluster-up cluster-down cluster-sync \
-		test test-functional test-unit test-lint \
+		test test-ci test-functional test-unit test-lint \
 		publish \
 		wasp \
 		fmt \
@@ -61,6 +61,11 @@ cluster-sync: cluster-clean-wasp
 test: WHAT = ./pkg/... ./cmd/...
 test: bootstrap-ginkgo
 	hack/build/bazel-docker.sh "ACK_GINKGO_DEPRECATIONS=${ACK_GINKGO_DEPRECATIONS} ./hack/build/run-unit-tests.sh ${WHAT}"
+
+test-ci: WHAT = ./pkg/... ./cmd/...
+test-ci:
+	./hack/build/bootstrap-ginkgo.sh
+	./hack/build/run-unit-tests.sh ${WHAT}
 
 build-functest:
 	hack/build/bazel-docker.sh ./hack/build/build-functest.sh
