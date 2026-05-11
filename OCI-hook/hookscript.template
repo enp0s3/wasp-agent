@@ -5,9 +5,27 @@ echo "WASP SWAP hook"
 set -x
 
 CG_PATH=$(jq -er '.linux.cgroupsPath' < config.json)
-
-if [[ "$CG_PATH" =~ .*"burst".* ]];
-then
-  CONTAINERID=$(jq -er '.linux.cgroupsPath | split(":")[2]' < config.json)
-  {{ .RuntimeCmd }}
+if [[ ! "$CG_PATH" =~ .*"burst".* ]]; then
+  exit 0
 fi
+
+PID=$(jq -er '.pid' < status)
+CONTAINERID=$(jq -er '.linux.cgroupsPath | split(":")[2]' < config.json)
+rc=$({{ .RuntimeCmd }})
+if [ "$rc" -eq 0 ]; then
+  exit 0
+fi
+
+proc_state=$(cut -d' ' -f3 "${PROC_DIR}/$PID/stat" 2>/dev/null)
+if [ -z "$proc_state" ]; then
+  # Process fully gone (already reaped) or stat unreadable
+  # Container finished — expected
+  exit 0
+fi
+if [ "$proc_state" = "Z" ]; then
+  # Container exited normally (zombie, awaiting reap)
+  # Cgroup gone because container finished — expected
+  exit 0
+fi
+# Process is alive but update failed — genuine error
+exit "$rc"
