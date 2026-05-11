@@ -24,6 +24,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/openshift-virtualization/wasp-agent/pkg/client"
 	"github.com/openshift-virtualization/wasp-agent/pkg/informers"
 	"github.com/openshift-virtualization/wasp-agent/pkg/log"
@@ -39,23 +42,41 @@ type WaspApp struct {
 	cli                client.WaspClient
 	waspNs             string
 	nodeName           string
+	podName            string
 }
 
 func Execute() {
 	var err error
 	flag.Parse()
 
-	setCrioSocketSymLink()
-	if err = setOCIHook(); err != nil {
-		panic(err)
+	var app = WaspApp{}
+	app.podName, err = os.Hostname()
+	if err != nil {
+		panic(fmt.Errorf("failed to get pod name from hostname: %w", err))
 	}
 
-	var app = WaspApp{}
+	setCrioSocketSymLink()
+	if err = setOCIHook(app.podName); err != nil {
+		panic(err)
+	}
+	defer func() {
+		cleanupOCIHook(app.podName)
+		klog.Infof("cleanup complete, exiting")
+	}()
+
 	app.nodeName = os.Getenv("NODE_NAME")
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	app.ctx = ctx
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		sig := <-sigCh
+		klog.Infof("received signal %v, shutting down", sig)
+		cancel()
+	}()
 
 	nsBytes, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err != nil {
