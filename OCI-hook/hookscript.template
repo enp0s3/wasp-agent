@@ -4,6 +4,8 @@ echo "WASP SWAP hook"
 
 set -x
 
+PROC_DIR="${PROC_DIR:-/proc}"
+
 CG_PATH=$(jq -er '.linux.cgroupsPath' < config.json)
 if [[ ! "$CG_PATH" =~ .*"burst".* ]]; then
   exit 0
