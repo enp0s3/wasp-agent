@@ -32,3 +32,7 @@ ginkgo_dirs=$(go list -f '{{.Dir}}' ${pkgs} 2>/dev/null)
 test_command="env OPERATOR_DIR=${WASP_DIR} ${GINKGO} -v -coverprofile=.coverprofile ${ginkgo_dirs} ${test_args:+-args $test_args}"
 echo "${test_command}"
 ${test_command}
+
+echo ""
+echo "=== Running OCI hook script tests ==="
+"${WASP_DIR}/OCI-hook/testData/run-tests.sh"

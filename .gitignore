@@ -10,3 +10,4 @@
 /manifests/generated/*
 /wasp
 /manifest-generator
+/OCI-hook/testData/rendered-hook.sh
