@@ -13,7 +13,8 @@ fi
 
 PID=$(jq -er '.pid' < status)
 CONTAINERID=$(jq -er '.linux.cgroupsPath | split(":")[2]' < config.json)
-rc=$({{ .RuntimeCmd }})
+{{ .RuntimeCmd }}
+rc=$?
 if [ "$rc" -eq 0 ]; then
   exit 0
 fi

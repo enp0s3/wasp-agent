@@ -33,9 +33,9 @@ func (r *Renderer) Render() error {
 
 	switch r.runtimeCmd {
 	case RuncBinary:
-		data.RuntimeCmd = fmt.Sprintf("%s update \"$CONTAINERID\" --memory-swap -1\n", RuncBinary)
+		data.RuntimeCmd = fmt.Sprintf("%s update \"$CONTAINERID\" --memory-swap -1", RuncBinary)
 	case CrunBinary:
-		data.RuntimeCmd = fmt.Sprintf("%s update --memory-swap=-1 \"$CONTAINERID\"\n", CrunBinary)
+		data.RuntimeCmd = fmt.Sprintf("%s update --memory-swap=-1 \"$CONTAINERID\"", CrunBinary)
 	default:
 		return fmt.Errorf("unsupported OCI runtime %s", r.runtimeCmd)
 	}
