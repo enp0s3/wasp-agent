@@ -6,13 +6,18 @@ set -x
 
 PROC_DIR="${PROC_DIR:-/proc}"
 
+STATE=$(cat)
+
 CG_PATH=$(jq -er '.linux.cgroupsPath' < config.json)
 if [[ ! "$CG_PATH" =~ .*"burst".* ]]; then
   exit 0
 fi
 
-PID=$(jq -er '.pid' < status)
-CONTAINERID=$(jq -er '.linux.cgroupsPath | split(":")[2]' < config.json)
+PID=$(echo "$STATE" | jq -er '.pid')
+if [ -z "$PID" ]; then
+  exit 0
+fi
+CONTAINERID=$(echo "$STATE" | jq -er '.id')
 {{ .RuntimeCmd }}
 rc=$?
 if [ "$rc" -eq 0 ]; then

@@ -55,10 +55,17 @@ for scenario_dir in "${SCENARIOS_DIR}"/*/; do
     echo "--- ${scenario}"
     echo "    crun: ${use_crun}, expected exit: ${expected_exit_code}, PROC_DIR: ${proc_dir}"
 
+    state_file="${scenario_dir}/state.json"
+    if [ -f "${state_file}" ]; then
+        state_input="${state_file}"
+    else
+        state_input="/dev/null"
+    fi
+
     set +e
     (
         cd "${scenario_dir}"
-        PATH="${crun_bin_dir}:${PATH}" PROC_DIR="${proc_dir}" "${RENDERED_SCRIPT}"
+        PATH="${crun_bin_dir}:${PATH}" PROC_DIR="${proc_dir}" "${RENDERED_SCRIPT}" < "${state_input}"
     ) > /dev/null 2>&1
     actual_exit_code=$?
     set -e
